@@ -231,9 +231,11 @@ Based on production runs:
 
 ### Common Issues
 
-#### "SUPABASE_URL environment variable is not set"
-- Ensure `.env` file exists in backend directory
-- Check environment variables are loaded with `dotenv`
+#### "SUPABASE_URL environment variable is not set" or "supabaseUrl is required"
+- **Most common cause:** The `.env` file must be in the `backend` directory, not the project root
+- Ensure `.env` file exists in `backend/` directory: `ls backend/.env`
+- If your `.env` is in the root, copy it: `cp .env backend/.env`
+- Verify environment variables are loaded with `dotenv` (already configured in crawlers)
 
 #### High Memory Usage
 - Reduce `MAX_WORKERS` configuration (default: 30)

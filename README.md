@@ -83,9 +83,8 @@ npm install
 # 3. Create directories
 mkdir -p data logs
 
-# 4. Copy configuration (from root)
-cd ..
-cp .env.example .env
+# 4. Copy configuration to backend directory
+cp ../.env.example .env  # Copy template to backend folder
 
 # 5. Edit .env with your credentials
 nano .env
@@ -104,6 +103,8 @@ docker-compose run nightly-crawler
 ```
 
 ## ⚙️ Configuration
+
+> **Important:** The `.env` file must be placed in the `backend` directory, not the project root.
 
 ### Required Environment Variables
 ```bash
