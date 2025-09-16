@@ -1992,7 +1992,7 @@ class HistoricalCrawler {
         timestamp: new Date().toISOString(),
         totalCases: discoveredCases.length,
         cases: discoveredCases,
-        processedDocuments: new Set(), // Track completed documents to handle partial case completion
+        processedDocuments: [], // Track completed documents to handle partial case completion
         status: 'discovery_complete'
       };
       
@@ -2151,8 +2151,8 @@ class HistoricalCrawler {
       const pipelineData = this.loadPipelineData();
       if (!pipelineData) return;
       
-      // Initialize processedDocuments if it doesn't exist (for backward compatibility)
-      if (!pipelineData.processedDocuments) {
+      // Initialize processedDocuments if it doesn't exist or is wrong type (for backward compatibility)
+      if (!pipelineData.processedDocuments || !Array.isArray(pipelineData.processedDocuments)) {
         pipelineData.processedDocuments = [];
       }
       
