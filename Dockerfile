@@ -60,6 +60,10 @@ COPY backend/src ./src
 # Copy database migrations
 COPY migrations ./migrations
 
+# Copy .env file if it exists (for consistency with local development)
+# Note: docker-compose.yml also loads env vars via env_file directive
+COPY .env* ./
+
 # Create data directory for checkpoints and logs
 RUN mkdir -p /app/data /app/logs
 

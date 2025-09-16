@@ -103,6 +103,14 @@ print_info "This may take a few minutes as Puppeteer downloads Chromium..."
 
 # Install dependencies in backend directory
 cd backend
+
+# Copy .env to backend if it exists in root
+if [ -f ../.env ] && [ ! -f .env ]; then
+    print_info "Copying .env to backend directory..."
+    cp ../.env .env
+    print_success ".env copied to backend directory"
+fi
+
 npm install
 print_success "Node.js dependencies installed"
 
