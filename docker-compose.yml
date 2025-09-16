@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Historical Crawler - One-time or scheduled bulk processing
+  historical-crawler:
+    build: .
+    container_name: idaho-puc-historical-crawler
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - CRAWLER_MAX_WORKERS=${CRAWLER_MAX_WORKERS:-30}
+      - CRAWLER_START_YEAR=${CRAWLER_START_YEAR:-2010}
+      - CRAWLER_END_YEAR=${CRAWLER_END_YEAR:-2024}
+    volumes:
+      - ./data:/app/data  # Persist checkpoints and recovery files
+      - ./logs:/app/logs  # Store logs
+    command: node src/services/crawlers/historical-crawler.js
+    deploy:
+      resources:
+        limits:
+          memory: 4G  # Adjust based on worker count
+        reservations:
+          memory: 2G
+    restart: "no"  # Don't restart - runs to completion
+
+  # Nightly Crawler - Daily incremental updates
+  nightly-crawler:
+    build: .
+    container_name: idaho-puc-nightly-crawler
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - NIGHTLY_MAX_WORKERS=${NIGHTLY_MAX_WORKERS:-5}
+      - SKIP_EMBEDDINGS=${SKIP_EMBEDDINGS:-false}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: node src/services/crawlers/nightly-crawler.js
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    restart: "no"
+
+  # Health Check Service - For monitoring
+  health-check:
+    build: .
+    container_name: idaho-puc-health-check
+    env_file: .env
+    ports:
+      - "3000:3000"
+    command: node src/services/crawlers/nightly-crawler.js --health
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Cron scheduler for automated runs
+  scheduler:
+    image: mcuadros/ofelia:latest
+    container_name: idaho-puc-scheduler
+    depends_on:
+      - nightly-crawler
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./backend/scheduler-config.ini:/etc/ofelia/config.ini
+    restart: unless-stopped
+
+# Networks
+networks:
+  default:
+    name: idaho-puc-network
+
+# Volumes for persistent data
+volumes:
+  crawler-data:
+    driver: local
+  crawler-logs:
+    driver: local

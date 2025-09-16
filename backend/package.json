@@ -1,0 +1,59 @@
+{
+  "name": "idaho-puc-crawler",
+  "version": "2.0.0",
+  "description": "Enterprise-grade web crawler for Idaho Public Utilities Commission documents",
+  "type": "module",
+  "main": "src/services/crawlers/index.js",
+  "scripts": {
+    "start": "node src/services/crawlers/historical-crawler.js",
+    "crawl:historical": "node src/services/crawlers/historical-crawler.js",
+    "crawl:nightly": "node src/services/crawlers/nightly-crawler.js",
+    "crawl:test": "CRAWLER_START_YEAR=2024 CRAWLER_END_YEAR=2024 CRAWLER_MAX_WORKERS=2 node src/services/crawlers/historical-crawler.js",
+    "health": "node src/services/crawlers/nightly-crawler.js --health",
+    "docker:build": "docker-compose build",
+    "docker:historical": "docker-compose run historical-crawler",
+    "docker:nightly": "docker-compose run nightly-crawler",
+    "docker:up": "docker-compose up -d scheduler health-check",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "setup": "../setup.sh",
+    "clean": "rm -rf data/*.json logs/*.log",
+    "test": "echo \"Manual testing: npm run crawl:test\""
+  },
+  "keywords": [
+    "crawler",
+    "web-scraping",
+    "puppeteer",
+    "idaho-puc",
+    "document-extraction",
+    "regulatory-documents",
+    "enterprise"
+  ],
+  "author": "Idaho PUC Research Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.53.0",
+    "dotenv": "^16.3.1",
+    "puppeteer": "^24.20.0",
+    "uuid": "^9.0.1"
+  },
+  "optionalDependencies": {
+    "openai": "^4.52.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "@types/uuid": "^9.0.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/idaho-puc-crawler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/idaho-puc-crawler/issues"
+  },
+  "homepage": "https://github.com/your-org/idaho-puc-crawler#readme"
+}
